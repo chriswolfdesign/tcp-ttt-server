@@ -33,4 +33,18 @@ func main() {
 	}
 
 	fmt.Println("Player One:", serve.Game.PlayerOneName)
+
+	for serve.Game.PlayerTwoName == "" {
+		fmt.Println("Waiting for player two to join.")
+
+		conn, err := serve.Accept()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		serve.ListenForPlayerTwo(conn)
+	}
+
+	fmt.Println("Player Two:", serve.Game.PlayerTwoName)
 }

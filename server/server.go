@@ -110,3 +110,53 @@ func (s *Server) sendOnboardingFailure(conn net.Conn) {
 		return
 	}
 }
+
+func (s *Server) ListenForPlayerTwo(conn net.Conn) {
+	defer conn.Close()
+
+	buf := make([]byte, 1024)
+	_, err := conn.Read(buf)
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(conn)
+		return
+	}
+
+	tmp := bytes.NewBuffer(buf)
+
+	onboardingRequest := &tcp_payloads.PlayerOnboardingRequest{}
+	dec := gob.NewDecoder(tmp)
+
+	if err := dec.Decode(onboardingRequest); err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(conn)
+		return
+	}
+
+	fmt.Printf("Received: %+v\n", onboardingRequest)
+
+	if onboardingRequest.PayloadType != strings.TYPE_ONBOARDING_REQUEST {
+		s.sendOnboardingFailure(conn)
+		return
+	}
+
+	s.Game.SetPlayerTwo(onboardingRequest.Name)
+
+	var responseBuffer bytes.Buffer
+	enc := gob.NewEncoder(&responseBuffer)
+
+	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_SUCCESS)
+
+	if err = enc.Encode(response); err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(conn)
+		return
+	}
+
+	_, err = conn.Write(responseBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(conn)
+		return
+	}
+}
