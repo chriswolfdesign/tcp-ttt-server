@@ -18,13 +18,19 @@ func main() {
 		return
 	}
 
-	for {
+	fmt.Println("Server started")
+
+	for serve.Game.PlayerOneName == "" {
+		fmt.Println("Waiting for player one to join.")
+
 		conn, err := serve.Accept()
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 
-		go serve.HandleConnection(conn)
+		serve.ListenForPlayerOne(conn)
 	}
+
+	fmt.Println("Player One:", serve.Game.PlayerOneName)
 }
