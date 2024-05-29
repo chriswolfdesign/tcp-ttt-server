@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/chriswolfdesign/tcp-ttt-common/enums"
 	"github.com/chriswolfdesign/tcp-ttt-common/model"
 	"github.com/chriswolfdesign/tcp-ttt-common/strings"
 	"github.com/chriswolfdesign/tcp-ttt-common/tcp_payloads"
@@ -77,7 +78,7 @@ func (s *Server) ListenForPlayerOne(conn net.Conn) {
 	var responseBuffer bytes.Buffer
 	enc := gob.NewEncoder(&responseBuffer)
 
-	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_SUCCESS)
+	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_SUCCESS, enums.PLAYER_ONE)
 
 	if err = enc.Encode(response); err != nil {
 		fmt.Println(err)
@@ -97,7 +98,7 @@ func (s *Server) sendOnboardingFailure(conn net.Conn) {
 	var responseBuffer bytes.Buffer
 	enc := gob.NewEncoder(&responseBuffer)
 
-	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_FAILURE)
+	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_FAILURE, "")
 
 	if err := enc.Encode(response); err != nil {
 		fmt.Println(err)
@@ -145,7 +146,7 @@ func (s *Server) ListenForPlayerTwo(conn net.Conn) {
 	var responseBuffer bytes.Buffer
 	enc := gob.NewEncoder(&responseBuffer)
 
-	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_SUCCESS)
+	response := tcp_payloads.GeneratePlayerOnboardingResponse(strings.ONBOARD_SUCCESS, enums.PLAYER_TWO)
 
 	if err = enc.Encode(response); err != nil {
 		fmt.Println(err)
