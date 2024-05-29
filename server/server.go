@@ -13,9 +13,11 @@ import (
 )
 
 type Server struct {
-	Port     string
-	Listener net.Listener
-	Game     *model.Game
+	Port          string
+	Listener      net.Listener
+	Game          *model.Game
+	PlayerOneConn net.Conn
+	PlayerTwoConn net.Conn
 }
 
 type Message struct {
@@ -45,8 +47,6 @@ func (s *Server) Accept() (net.Conn, error) {
 }
 
 func (s *Server) ListenForPlayerOne(conn net.Conn) {
-	defer conn.Close()
-
 	buf := make([]byte, 1024)
 	_, err := conn.Read(buf)
 	if err != nil {
@@ -73,6 +73,7 @@ func (s *Server) ListenForPlayerOne(conn net.Conn) {
 		return
 	}
 
+	s.PlayerOneConn = conn
 	s.Game.SetPlayerOne(onboardingRequest.Name)
 
 	var responseBuffer bytes.Buffer
@@ -113,8 +114,6 @@ func (s *Server) sendOnboardingFailure(conn net.Conn) {
 }
 
 func (s *Server) ListenForPlayerTwo(conn net.Conn) {
-	defer conn.Close()
-
 	buf := make([]byte, 1024)
 	_, err := conn.Read(buf)
 	if err != nil {
@@ -141,6 +140,7 @@ func (s *Server) ListenForPlayerTwo(conn net.Conn) {
 		return
 	}
 
+	s.PlayerTwoConn = conn
 	s.Game.SetPlayerTwo(onboardingRequest.Name)
 
 	var responseBuffer bytes.Buffer
@@ -158,6 +158,37 @@ func (s *Server) ListenForPlayerTwo(conn net.Conn) {
 	if err != nil {
 		fmt.Println(err)
 		s.sendOnboardingFailure(conn)
+		return
+	}
+}
+
+func (s *Server) InformGameStarted() {
+	var gameStartedBuffer bytes.Buffer
+	enc := gob.NewEncoder(&gameStartedBuffer)
+
+	gameStartedMessage := tcp_payloads.GameStartingMessage{
+		Message:     strings.GAME_STARTING_MESSAGE,
+		PayloadType: strings.TYPE_GAME_STARTING_MESSAGE,
+	}
+
+	if err := enc.Encode(gameStartedMessage); err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
+		return
+	}
+
+	_, err := s.PlayerOneConn.Write(gameStartedBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		return
+	}
+
+	_, err = s.PlayerTwoConn.Write(gameStartedBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
 		return
 	}
 }
