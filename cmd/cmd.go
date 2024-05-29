@@ -47,4 +47,8 @@ func main() {
 	}
 
 	fmt.Println("Player Two:", serve.Game.PlayerTwoName)
+
+	serve.InformGameStarted()
+
+	fmt.Println("Game has begun")
 }
