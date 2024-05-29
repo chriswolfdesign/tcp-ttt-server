@@ -169,6 +169,7 @@ func (s *Server) InformGameStarted() {
 	gameStartedMessage := tcp_payloads.GameStartingMessage{
 		Message:     strings.GAME_STARTING_MESSAGE,
 		PayloadType: strings.TYPE_GAME_STARTING_MESSAGE,
+		Game:        *s.Game,
 	}
 
 	if err := enc.Encode(gameStartedMessage); err != nil {
