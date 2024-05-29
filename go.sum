@@ -6,3 +6,5 @@ github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529090216-785584ce507e h1:
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529090216-785584ce507e/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529110745-f2e66e8e6cb2 h1:gjdWcRmj9+7t3BOVUTEmFiXfGuhJ9zYAcruTYuxCYOM=
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529110745-f2e66e8e6cb2/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529115615-4dca54978ca7 h1:ZmEytWxjTtEJqgeB24w8yeLz/SR+ve6Pt0l9lyc+AiM=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529115615-4dca54978ca7/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
