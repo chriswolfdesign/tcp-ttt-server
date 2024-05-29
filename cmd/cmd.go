@@ -51,4 +51,7 @@ func main() {
 	serve.InformGameStarted()
 
 	fmt.Println("Game has begun")
+
+	fmt.Println("Current board state")
+	serve.Game.Board.PrintBoard()
 }
