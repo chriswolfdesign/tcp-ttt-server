@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"tcp-ttt-server/server"
+	"time"
+
+	"github.com/chriswolfdesign/tcp-ttt-common/strings"
 )
 
 type Message struct {
@@ -54,4 +57,15 @@ func main() {
 
 	fmt.Println("Current board state")
 	serve.Game.Board.PrintBoard()
+
+	for serve.Game.Winner == strings.NOT_OVER {
+		// FIXME: must wait to give player two time to prepare to receive
+		time.Sleep(time.Millisecond * 250)
+		serve.SendPlayerTurn()
+
+		fmt.Println("sent messages")
+
+		// TODO: Implement the rest of the game
+		return
+	}
 }

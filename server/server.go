@@ -193,3 +193,37 @@ func (s *Server) InformGameStarted() {
 		return
 	}
 }
+
+func (s *Server) SendPlayerTurn() {
+	var playerTurnBuffer bytes.Buffer
+	enc := gob.NewEncoder(&playerTurnBuffer)
+
+	playerTurnMessage := tcp_payloads.PlayerTurnMessage{
+		Player: s.Game.CurrentPlayer,
+		PayloadType: strings.TYPE_PLAYER_TURN_MESSAGE,
+	}
+
+	if err := enc.Encode(playerTurnMessage); err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
+		return
+	}
+
+	_, err := s.PlayerOneConn.Write(playerTurnBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		return
+	}
+
+	fmt.Println("Sent player turn message to player one")
+
+	_, err = s.PlayerTwoConn.Write(playerTurnBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
+	}
+
+	fmt.Println("Sent player turn message to player two")
+}
