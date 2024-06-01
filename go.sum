@@ -2,6 +2,10 @@ github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529121605-8b1b391dbdad h1:
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240529121605-8b1b391dbdad/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601143832-d35bbc22b9fc h1:cQ8Ge9qZu1ZWCY5dymwU49lfYWA78CzcOX+OO/eAIL8=
 github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601143832-d35bbc22b9fc/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601174808-d2646a63041e h1:7RhKkOpUSGfCQJBBSY6T1xiYyWARO5QGRbKV8SkPWqs=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601174808-d2646a63041e/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601181603-bec8fead2b75 h1:x/P1rUt5Dnn0mWOcgpmR7akoq3ykvdrFcBmWzIoEqv4=
+github.com/chriswolfdesign/tcp-ttt-common v0.0.0-20240601181603-bec8fead2b75/go.mod h1:lHgNmMe2TOn/SJBGYLA8NapJbrDlwXCVoB5PLWKM6XA=
 github.com/go-logr/logr v1.4.1 h1:pKouT5E8xu9zeFC39JXRDukb6JFQPXM5p5I91188VAQ=
 github.com/go-logr/logr v1.4.1/go.mod h1:9T104GzyrTigFIr8wt5mBrctHMim0Nb2HLGrmQ40KvY=
 github.com/go-task/slim-sprig/v3 v3.0.0 h1:sUs3vkvUymDpBKi3qH1YSqBQk9+9D/8M2mN1vB6EwHI=

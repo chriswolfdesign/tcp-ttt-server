@@ -227,3 +227,185 @@ func (s *Server) SendPlayerTurn() {
 
 	fmt.Println("Sent player turn message to player two")
 }
+
+func (s *Server) AcceptPlayerOneMove() {
+	illegalMove := true
+
+	for illegalMove {
+		buf := make([]byte, 1024)
+		_, err := s.PlayerOneConn.Read(buf)
+		if err != nil {
+			fmt.Println(err)
+			s.sendOnboardingFailure(s.PlayerOneConn)
+			continue
+		}
+
+		tmp := bytes.NewBuffer(buf)
+
+		makeMoveRequest := &tcp_payloads.MakeMoveMessage{}
+		dec := gob.NewDecoder(tmp)
+
+		if err := dec.Decode(makeMoveRequest); err != nil {
+			fmt.Println(err)
+			s.sendOnboardingFailure(s.PlayerOneConn)
+			continue
+		}
+
+		if makeMoveRequest.PayloadType != strings.TYPE_MAKE_MOVE_MESSAGE {
+			fmt.Println(err)
+		}
+
+		err  = s.Game.MakeMove(makeMoveRequest.Row, makeMoveRequest.Col)
+		if err != nil {
+			var illegalMoveBuffer bytes.Buffer
+			enc := gob.NewEncoder(&illegalMoveBuffer)
+
+			illegalMoveMessage := tcp_payloads.IllegalMoveMessage{
+				ErrorMessage: err.Error(),
+				PayloadType: strings.TYPE_ILLEGAL_MOVE_MESSAGE,
+			}
+
+			if err := enc.Encode(illegalMoveMessage); err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerOneConn)
+				continue
+			}
+
+			_, err = s.PlayerOneConn.Write(illegalMoveBuffer.Bytes())
+			if err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerOneConn)
+				continue
+			}
+		} else {
+			illegalMove = false
+
+			var acceptedMoveBuffer bytes.Buffer
+			enc := gob.NewEncoder(&acceptedMoveBuffer)
+
+			acceptedMoveMessage := tcp_payloads.AcceptedMoveMessage{
+				PayloadType: strings.TYPE_ACCEPTED_MOVE_MESSAGE,
+			}
+
+			if err := enc.Encode(acceptedMoveMessage); err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerOneConn)
+				continue
+			}
+
+			_, err = s.PlayerOneConn.Write(acceptedMoveBuffer.Bytes())
+			if err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerOneConn)
+				continue
+			}
+		}
+	}
+}
+
+func (s *Server) AcceptPlayerTwoMove() {
+	illegalMove := true
+
+	for illegalMove {
+		buf := make([]byte, 1024)
+		_, err := s.PlayerTwoConn.Read(buf)
+		if err != nil {
+			fmt.Println(err)
+			s.sendOnboardingFailure(s.PlayerTwoConn)
+			continue
+		}
+
+		tmp := bytes.NewBuffer(buf)
+
+		makeMoveRequest := &tcp_payloads.MakeMoveMessage{}
+		dec := gob.NewDecoder(tmp)
+
+		if err := dec.Decode(makeMoveRequest); err != nil {
+			fmt.Println(err)
+			s.sendOnboardingFailure(s.PlayerTwoConn)
+			continue
+		}
+
+		if makeMoveRequest.PayloadType != strings.TYPE_MAKE_MOVE_MESSAGE {
+			fmt.Println(err)
+			continue
+		}
+
+		err  = s.Game.MakeMove(makeMoveRequest.Row, makeMoveRequest.Col)
+		if err != nil {
+			var illegalMoveBuffer bytes.Buffer
+			enc := gob.NewEncoder(&illegalMoveBuffer)
+
+			illegalMoveMessage := tcp_payloads.IllegalMoveMessage{
+				ErrorMessage: err.Error(),
+				PayloadType: strings.TYPE_ILLEGAL_MOVE_MESSAGE,
+			}
+
+			if err := enc.Encode(illegalMoveMessage); err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerTwoConn)
+				continue
+			}
+
+			_, err = s.PlayerTwoConn.Write(illegalMoveBuffer.Bytes())
+			if err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerTwoConn)
+				continue
+			}
+		} else {
+			illegalMove = false
+
+			var acceptedMoveBuffer bytes.Buffer
+			enc := gob.NewEncoder(&acceptedMoveBuffer)
+
+			acceptedMoveMessage := tcp_payloads.AcceptedMoveMessage{
+				PayloadType: strings.TYPE_ACCEPTED_MOVE_MESSAGE,
+			}
+
+			if err := enc.Encode(acceptedMoveMessage); err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerTwoConn)
+				continue
+			}
+
+			_, err = s.PlayerTwoConn.Write(acceptedMoveBuffer.Bytes())
+			if err != nil {
+				fmt.Println(err)
+				s.sendOnboardingFailure(s.PlayerTwoConn)
+				continue
+			}
+		}
+	}
+}
+
+func (s *Server) SendGameState() {
+	var gameStateBuffer bytes.Buffer
+	enc := gob.NewEncoder(&gameStateBuffer)
+
+	gameStartedMessage := tcp_payloads.GameStateMessage{
+		PayloadType: strings.TYPE_GAME_STATE_MESSAGE,
+		Game:        *s.Game,
+	}
+
+	if err := enc.Encode(gameStartedMessage); err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
+		return
+	}
+
+	_, err := s.PlayerOneConn.Write(gameStateBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerOneConn)
+		return
+	}
+
+	_, err = s.PlayerTwoConn.Write(gameStateBuffer.Bytes())
+	if err != nil {
+		fmt.Println(err)
+		s.sendOnboardingFailure(s.PlayerTwoConn)
+		return
+	}
+}
