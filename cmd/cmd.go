@@ -5,6 +5,7 @@ import (
 	"tcp-ttt-server/server"
 	"time"
 
+	"github.com/chriswolfdesign/tcp-ttt-common/enums"
 	"github.com/chriswolfdesign/tcp-ttt-common/strings"
 )
 
@@ -59,13 +60,16 @@ func main() {
 	serve.Game.Board.PrintBoard()
 
 	for serve.Game.Winner == strings.NOT_OVER {
-		// FIXME: must wait to give player two time to prepare to receive
+		if serve.Game.CurrentPlayer == enums.PLAYER_ONE {
+			serve.AcceptPlayerOneMove()
+			fmt.Println("Got move from player one")
+		} else {
+			serve.AcceptPlayerTwoMove()
+			fmt.Println("Got move from player two")
+		}
+
 		time.Sleep(time.Millisecond * 250)
-		serve.SendPlayerTurn()
-
-		fmt.Println("sent messages")
-
-		// TODO: Implement the rest of the game
-		return
+		serve.SendGameState()
 	}
+
 }
