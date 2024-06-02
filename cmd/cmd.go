@@ -72,4 +72,9 @@ func main() {
 		serve.SendGameState()
 	}
 
+	// game has ended
+	serve.SendGameState()
+
+	fmt.Println("The game is over")
+	fmt.Println("Result:", serve.Game.Winner)
 }
